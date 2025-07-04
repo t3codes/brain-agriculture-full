@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  FARMER
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  name         String
+  email        String     @unique
+  password     String
+  refreshToken String? 
+  role         Role       @default(FARMER) // <- novo campo
+  superuser    Boolean    @default(false)
+  producers    Producer[] // O usuário pode criar vários produtores
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+
+model Producer {
+  id           Int        @id @default(autoincrement())
+  cpfOrCnpj    String     @unique
+  name         String
+  farms        Farm[]     @relation("ProducerFarms")
+  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId Int? 
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Farm {
+  id             Int      @id @default(autoincrement())
+  name           String
+  city           String
+  state          String
+  totalArea      Float
+  arableArea     Float
+  vegetationArea Float
+  producerId     Int
+  producer   Producer @relation(fields: [producerId], references: [id], name: "ProducerFarms", onDelete: Cascade)
+  crops          Crop[]   // Relação direta com Crop
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+
+model Crop {
+  id             Int      @id @default(autoincrement())
+  name           String
+  variety        String?   // variedade da cultura (ex: Milho BT, Soja RR)
+  harvestYear    Int       // ano da safra
+  plantingDate   DateTime? // data de plantio
+  harvestDate    DateTime? // data de colheita
+  area Float? // hectares plantados
+  yield          Float?    // produtividade estimada em sacas/hectare ou kg/ha
+  farmId         Int
+  farm           Farm      @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}

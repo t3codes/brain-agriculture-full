@@ -1,0 +1,61 @@
+<!-- CONTEÚDO DO DASHBOARD -->
+<div *ngIf="!isLoading && !errorMessage">
+  <ng-container *ngIf="hasData(); else noDataTemplate">
+    <h2 class="mb-3">Dashboard</h2>
+    <p><strong>Total de Fazendas:</strong> {{ data.totalFarms }}</p>
+    <p><strong>Total de Hectares:</strong> {{ data.totalHectares }}</p>
+    <hr />
+
+    <div class="row">
+      <div class="col-md-4 chart-container">
+        <h5>Fazendas por Estado</h5>
+        <ngx-charts-pie-chart
+          [view]="view"
+          [results]="chartByState"
+          [legend]="true"
+          [labels]="true"
+          [doughnut]="false"
+          [explodeSlices]="false"
+          [animations]="true"
+          [legendPosition]="legendPosition">
+        </ngx-charts-pie-chart>
+      </div>
+
+      <div class="col-md-4 chart-container">
+        <h5>Fazendas por Cultura</h5>
+        <ngx-charts-pie-chart
+          [view]="view"
+          [results]="chartByCrop"
+          [legend]="true"
+          [labels]="true"
+          [doughnut]="false"
+          [explodeSlices]="false"
+          [animations]="true"
+          [legendPosition]="legendPosition">
+        </ngx-charts-pie-chart>
+      </div>
+
+      <div class="col-md-4 chart-container">
+        <h5>Uso do Solo</h5>
+        <ngx-charts-pie-chart
+          [view]="view"
+          [results]="chartLandUse"
+          [legend]="true"
+          [labels]="true"
+          [doughnut]="true"
+          [explodeSlices]="true"
+          [animations]="true"
+          [legendPosition]="legendPosition">
+        </ngx-charts-pie-chart>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Template para ausência de dados -->
+  <ng-template #noDataTemplate>
+    <div class="text-center mt-5 mb-5" style="opacity: 0.7;">
+      <h4 class="text-muted">Nenhum dado disponível para exibir no momento.</h4>
+      <p>Cadastre fazendas e culturas para ver os gráficos aqui.</p>
+    </div>
+  </ng-template>
+</div>
